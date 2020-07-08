@@ -1,7 +1,7 @@
 POST https://www.googleapis.com/compute/v1/projects/cramchallangelab1/zones/us-central1-f/instances
 {
   "kind": "compute#instance",
-  "name": "ccl1-instance",
+  "name": "ccl1-instance-1",
   "zone": "projects/cramchallangelab1/zones/us-central1-f",
   "machineType": "projects/cramchallangelab1/zones/us-central1-f/machineTypes/f1-micro",
   "displayDevice": {
@@ -9,7 +9,12 @@ POST https://www.googleapis.com/compute/v1/projects/cramchallangelab1/zones/us-c
   },
   "metadata": {
     "kind": "compute#metadata",
-    "items": []
+    "items": [
+      {
+        "key": "startup-script",
+        "value": "#! /bin/bash\n\n#\n# Echo commands as they are run, to make debugging easier.\n# GCE startup script output shows up in \"/var/log/syslog\" .\n#\nset -x\n\n\n#\n# Stop apt-get calls from trying to bring up UI.\n#\nexport DEBIAN_FRONTEND=noninteractive\n\n\n#\n# Make sure installed packages are up to date with all security patches.\n#\napt-get -yq update\napt-get -yq upgrade\n\n\n#\n# Install Google's Stackdriver logging agent, as per\n# https://cloud.google.com/logging/docs/agent/installation\n#\ncurl -sSO https://dl.google.com/cloudagents/install-logging-agent.sh\nbash install-logging-agent.sh\n\n\n#\n# Install and run the \"stress\" tool to max the CPU load for a while.\n#\napt-get -yq install stress\nstress -c 8 -t 120\n\n\n#\n# Report that we're done.\n#\n\n# Metadata should be set in the \"lab-logs-bucket\" attribute using the \"gs://mybucketname/\" format.\nlog_bucket_metadata_name=lab-logs-bucket\nlog_bucket_metadata_url=\"http://metadata.google.internal/computeMetadata/v1/instance/attributes/${log_bucket_metadata_name}\"\nworker_log_bucket=$(curl -H \"Metadata-Flavor: Google\" \"${log_bucket_metadata_url}\")\n\n# We write a file named after this machine.\nworker_log_file=\"machine-$(hostname)-finished.txt\"\necho \"Phew!  Work completed at $(date)\" >\"${worker_log_file}\"\n\n# And we copy that file to the bucket specified in the metadata.\necho \"Copying the log file to the bucket...\"\ngsutil cp \"${worker_log_file}\" \"${worker_log_bucket}\""
+      }
+    ]
   },
   "tags": {
     "items": []
@@ -21,25 +26,13 @@ POST https://www.googleapis.com/compute/v1/projects/cramchallangelab1/zones/us-c
       "boot": true,
       "mode": "READ_WRITE",
       "autoDelete": true,
-      "deviceName": "ccl1-instance",
+      "deviceName": "ccl1-instance-1",
       "initializeParams": {
         "sourceImage": "projects/debian-cloud/global/images/debian-10-buster-v20200618",
         "diskType": "projects/cramchallangelab1/zones/us-central1-f/diskTypes/pd-standard",
         "diskSizeGb": "10"
       },
       "diskEncryptionKey": {}
-    },
-    {
-      "kind": "compute#attachedDisk",
-      "mode": "READ_WRITE",
-      "autoDelete": false,
-      "type": "PERSISTENT",
-      "deviceName": "disk-1",
-      "initializeParams": {
-        "diskName": "disk-1",
-        "diskType": "projects/cramchallangelab1/zones/us-central1-a/diskTypes/pd-standard",
-        "diskSizeGb": "500"
-      }
     }
   ],
   "canIpForward": false,
