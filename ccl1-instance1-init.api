@@ -1,0 +1,91 @@
+POST https://www.googleapis.com/compute/v1/projects/cramchallangelab1/zones/us-central1-f/instances
+{
+  "kind": "compute#instance",
+  "name": "ccl1-instance",
+  "zone": "projects/cramchallangelab1/zones/us-central1-f",
+  "machineType": "projects/cramchallangelab1/zones/us-central1-f/machineTypes/f1-micro",
+  "displayDevice": {
+    "enableDisplay": false
+  },
+  "metadata": {
+    "kind": "compute#metadata",
+    "items": []
+  },
+  "tags": {
+    "items": []
+  },
+  "disks": [
+    {
+      "kind": "compute#attachedDisk",
+      "type": "PERSISTENT",
+      "boot": true,
+      "mode": "READ_WRITE",
+      "autoDelete": true,
+      "deviceName": "ccl1-instance",
+      "initializeParams": {
+        "sourceImage": "projects/debian-cloud/global/images/debian-10-buster-v20200618",
+        "diskType": "projects/cramchallangelab1/zones/us-central1-f/diskTypes/pd-standard",
+        "diskSizeGb": "10"
+      },
+      "diskEncryptionKey": {}
+    },
+    {
+      "kind": "compute#attachedDisk",
+      "mode": "READ_WRITE",
+      "autoDelete": false,
+      "type": "PERSISTENT",
+      "deviceName": "disk-1",
+      "initializeParams": {
+        "diskName": "disk-1",
+        "diskType": "projects/cramchallangelab1/zones/us-central1-a/diskTypes/pd-standard",
+        "diskSizeGb": "500"
+      }
+    }
+  ],
+  "canIpForward": false,
+  "networkInterfaces": [
+    {
+      "kind": "compute#networkInterface",
+      "subnetwork": "projects/cramchallangelab1/regions/us-central1/subnetworks/default",
+      "accessConfigs": [
+        {
+          "kind": "compute#accessConfig",
+          "name": "External NAT",
+          "type": "ONE_TO_ONE_NAT",
+          "networkTier": "PREMIUM"
+        }
+      ],
+      "aliasIpRanges": []
+    }
+  ],
+  "description": "",
+  "labels": {},
+  "scheduling": {
+    "preemptible": true,
+    "onHostMaintenance": "TERMINATE",
+    "automaticRestart": false,
+    "nodeAffinities": []
+  },
+  "deletionProtection": false,
+  "reservationAffinity": {
+    "consumeReservationType": "ANY_RESERVATION"
+  },
+  "serviceAccounts": [
+    {
+      "email": "686807586655-compute@developer.gserviceaccount.com",
+      "scopes": [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write",
+        "https://www.googleapis.com/auth/servicecontrol",
+        "https://www.googleapis.com/auth/service.management.readonly",
+        "https://www.googleapis.com/auth/trace.append"
+      ]
+    }
+  ],
+  "shieldedInstanceConfig": {
+    "enableSecureBoot": false,
+    "enableVtpm": true,
+    "enableIntegrityMonitoring": true
+  }
+}
