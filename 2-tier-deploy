@@ -1,5 +1,14 @@
 #!/bin/bash
 #version 2
+#2 tier autoscale across east and west
+#projectid=testproject123-cram
+#backend-subnet 192.168.1.0/24 us-west1 us-west1-a us-west1-b us-west1-c
+#frontend-subnet 192.168.0.0/24 us-east1 us-east1-b us-east1-c us-east1-d
+#vpc-network=ccl1-network
+#service-accounts=cram-frontend-service cram-backend-service
+#FW 
+#frontend outbound any - inbound ssh and icmp
+#backend inbound icmp only from fontend
 
 #create frontend service account
 gcloud iam --project=testproject123-cram service-accounts create cram-frontend-service \
